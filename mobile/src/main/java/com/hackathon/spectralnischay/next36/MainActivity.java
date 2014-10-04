@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private DeviceListener mListener = new AbstractDeviceListener() {
+    private DeviceListener mListener = new DeviceListener() {
         @Override
         public void onPair(Myo myo, long l) {
             Toast.makeText(getApplicationContext(), "paired", Toast.LENGTH_LONG).show();
@@ -96,15 +96,20 @@ public class MainActivity extends Activity {
 
         @Override
         public void onOrientationData(Myo myo, long l, Quaternion quaternion) {
+            Toast.makeText(getApplicationContext(), "quaternion x =" + quaternion.x(), Toast.LENGTH_SHORT).show();
         }
+
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
+//            Toast.makeText(getApplicationContext(), "Vector3_accel_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long l, Vector3 vector3) {
+//            Toast.makeText(getApplicationContext(), "Vector3_gyro_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
+
 
         @Override
         public void onRssi(Myo myo, long l, int i) {
