@@ -28,6 +28,12 @@ public class StartScreenActivity extends Activity {
     private double mYaw;
     private double mRoll;
 
+    public enum Scene {
+        ONE, TWO, THREE, FOUR,
+        FIVE
+    }
+
+    Scene mScene = Scene.ONE;
     View mStartScreenView;
 
     @Override
@@ -95,11 +101,29 @@ public class StartScreenActivity extends Activity {
 
         @Override
         public void onPose(Myo myo, long l, Pose pose) {
-            if (pose == Pose.WAVE_IN) {
+            if (mScene == Scene.ONE && pose == Pose.WAVE_IN) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
+                mScene = Scene.TWO;
             }
             else if (pose == Pose.WAVE_OUT) {
-                mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__thalmic_blue));
+                switch (mScene) {
+                    case TWO:
+                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__thalmic_blue));
+                        mScene = Scene.ONE;
+                        break;
+                    case THREE:
+                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
+                        mScene = Scene.TWO;
+                        break;
+                    case FOUR:
+                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                        mScene = Scene.THREE;
+                        break;
+                    case FIVE:
+                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                        mScene = Scene.FOUR;
+                        break;
+                }
             }
         }
 
@@ -114,22 +138,28 @@ public class StartScreenActivity extends Activity {
             mYaw = Quaternion.yaw(quaternion);
 
 
-            if (checkForDoorknob()) {
+            if (mScene == Scene.TWO && checkForDoorknob()) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                mScene = Scene.THREE;
             }
 
-            if (checkForRocketship()) {
+            if (mScene == Scene.THREE && checkForRocketship()) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                mScene = Scene.FOUR;
             }
+
+//            IF CIRCLE { }
         }
 
         private boolean checkForDoorknob() {
-            if (mOldX > 0.5 ) {
-                if (mRoll > 1 ) {
-                    Log.d("Nischay", "" + mOldX);
-                    return true;
-                }
+            if (mRoll > 1 ) {
+                Log.d("Nischay", "" + mOldX);
+                return true;
             }
+
+//            if (mOldX > 0.5 ) {
+//
+//            }
             return false;
         }
 

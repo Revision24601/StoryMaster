@@ -10,12 +10,6 @@
     android:paddingBottom="16dp"
     tools:context="com.hackathon.spectralnischay.next36.StartScreenActivity">
 
-    <TextView
-        android:text="@string/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -25,23 +19,6 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="73dp">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aesop's Fables"
-            android:id="@+id/button" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Green Eggs and Ham"
-            android:id="@+id/button2" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Harry Potter and the Philosopher Stone"
-            android:id="@+id/button3" />
     </LinearLayout>
 
 </RelativeLayout>

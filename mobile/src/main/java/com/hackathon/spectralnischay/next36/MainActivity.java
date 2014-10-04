@@ -199,13 +199,15 @@ public class MainActivity extends Activity {
         }
 
         private void checkForDoorknob() {
-            if (mOldX > 0.5 ) {
-                if (mRoll > 1 ) {
-                    Log.d("Nischay", "" + mOldX);
-                    TextView doorknobOldX = (TextView) findViewById(R.id.doorknob_old_x);
-                    doorknobOldX.setText("Doorknob");
-                }
+            if (mRoll > 1 ) {
+                Log.d("Nischay", "" + mOldX);
+                TextView doorknobOldX = (TextView) findViewById(R.id.doorknob_old_x);
+                doorknobOldX.setText("Doorknob");
             }
+
+//            if (mOldX > 0.5 ) {
+//
+//            }
         }
 
         @Override
