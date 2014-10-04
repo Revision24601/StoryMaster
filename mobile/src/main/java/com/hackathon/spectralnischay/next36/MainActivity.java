@@ -139,13 +139,17 @@ public class MainActivity extends Activity {
             }
         }
 
+
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
+//            Toast.makeText(getApplicationContext(), "Vector3_accel_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long l, Vector3 vector3) {
+//            Toast.makeText(getApplicationContext(), "Vector3_gyro_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
+
 
         @Override
         public void onRssi(Myo myo, long l, int i) {
