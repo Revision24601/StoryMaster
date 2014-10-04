@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.lang.Math;
 
+import com.google.android.gms.internal.i;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
@@ -38,6 +39,10 @@ public class MainActivity extends Activity {
     private double mLastCirclePitch = 0;
     private double circleErrorCount = 0;
     private double mCircleStartPitch = mPitch;
+    private double circleStartYaw = 0;
+    private double minYaw;
+    private double maxYaw;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,18 +146,22 @@ public class MainActivity extends Activity {
                 if (mPitch > mLastCirclePitch) {
                     circleDataCount += 1;
                 } else {
-                    circleErrorCount += 1;
+                    if (circleDataCount < 90) {
+                        circleErrorCount += 1;
+                    } else {
+                        circleStage = 1;
+                        circleErrorCount = 0;
+                    }
                 }
                 if (circleDataCount % 5 == 0) {
                     mLastCirclePitch = mPitch;
                 }
-                if (circleDataCount > 150) {
-                    circleStage = 1;
-                    circleErrorCount = 0;
-                }
-                if (circleErrorCount > 50) {
+                if (circleErrorCount > 30) {
                     circleDataCount = 0;
                     circleErrorCount = 0;
+                }
+                if (mYaw < maxYaw) {
+                    maxYaw = mYaw;
                 }
             }
 
@@ -165,19 +174,36 @@ public class MainActivity extends Activity {
                 if (circleDataCount % 5 == 0) {
                     mLastCirclePitch = mPitch;
                 }
-                if (circleDataCount < 50 && (-0.1 < mCircleStartPitch - mPitch))
+                if (circleDataCount < 20 && -0.25 < (mCircleStartPitch - mPitch))
                 {
-                    TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
-                    circleTextView.setText("HIT CIRCLE!!!!");
+                    if (checkIfCirclish()) {
+                        TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+                        circleTextView.setText("HIT CIRCLE!!!!");
+                    }
                 }
                 if (circleErrorCount > 50) {
                     circleDataCount = 0;
                     circleStage = 0;
                     circleErrorCount = 0;
                 }
+                if (mYaw > minYaw) {
+                    minYaw = mYaw;
+                }
             }
             TextView circleInfo = (TextView)findViewById(R.id.circleInfo);
             circleInfo.setText("Stage = " + circleStage + " circleDataCount" + circleDataCount + " circleErrorCount" + circleErrorCount);
+        }
+
+        private boolean checkIfCirclish() {
+            double leftDiff = circleStartYaw - minYaw;
+            double rightDiff = maxYaw - circleStartYaw;
+            boolean areSidesEqual = -0.5 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.5;
+            boolean isNotAVerticalOval = rightDiff < -0.35;
+//            Toast.makeText(getApplicationContext(), "rightDiff " + rightDiff + " leftDiff " + leftDiff + "areSidesEqual " + areSidesEqual + "isNotAVerticalOval " + isNotAVerticalOval, Toast.LENGTH_LONG).show();
+            TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+            circleTextView.setText("RightDiff " + rightDiff + " LeftDiff" + leftDiff);
+
+            return areSidesEqual && isNotAVerticalOval;
         }
 
         private void checkForRocketship() {
@@ -212,6 +238,10 @@ public class MainActivity extends Activity {
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
+             if (vector3.x() < 0.2 && vector3.y() < 0.7) {
+                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+                startCircle();
+             }
         }
 
         @Override
@@ -241,14 +271,19 @@ public class MainActivity extends Activity {
         mInitialRoll = mRoll;
         mInitialPitch = mPitch;
         mInitialYaw = mYaw;
+        TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+        circleTextView.setText("Waiting for circle");
         startCircle();
     }
 
     public void startCircle() {
+        circleStage = 0;
         mLastCirclePitch = mPitch;
         mCircleStartPitch = mPitch;
-        TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
-        circleTextView.setText("Waiting for circle");
+        circleStartYaw = mYaw;
+        maxYaw = mYaw;
+        minYaw = mYaw;
+
         circleDataCount = 0;
         circleErrorCount = 0;
     }
