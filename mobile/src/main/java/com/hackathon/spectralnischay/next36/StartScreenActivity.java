@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thalmic.myo.Arm;
@@ -28,6 +29,15 @@ public class StartScreenActivity extends Activity {
     private double mYaw;
     private double mRoll;
 
+    private int circleStage = 0;
+    private int circleDataCount = 0;
+    private double mLastCirclePitch = 0;
+    private double circleErrorCount = 0;
+    private double mCircleStartPitch = mPitch;
+    private double circleStartYaw = 0;
+    private double minYaw;
+    private double maxYaw;
+
     public enum Scene {
         ONE, TWO, THREE, FOUR,
         FIVE
@@ -35,12 +45,16 @@ public class StartScreenActivity extends Activity {
 
     Scene mScene = Scene.ONE;
     View mStartScreenView;
+    ImageView mStoryImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
         mStartScreenView = findViewById(R.id.start_screen_layout);
+        mStoryImage = (ImageView)findViewById(R.id.story_image);
+
+        mStoryImage.setImageResource(R.drawable.rocket1);
 
         Hub hub = Hub.getInstance();
         if (!hub.init(this)) {
@@ -103,24 +117,29 @@ public class StartScreenActivity extends Activity {
         public void onPose(Myo myo, long l, Pose pose) {
             if (mScene == Scene.ONE && pose == Pose.WAVE_IN) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
+                mStoryImage.setImageResource(R.drawable.rocket2);
                 mScene = Scene.TWO;
             }
             else if (pose == Pose.WAVE_OUT) {
                 switch (mScene) {
                     case TWO:
                         mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__thalmic_blue));
+                        mStoryImage.setImageResource(R.drawable.rocket1);
                         mScene = Scene.ONE;
                         break;
                     case THREE:
                         mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
+                        mStoryImage.setImageResource(R.drawable.rocket2);
                         mScene = Scene.TWO;
                         break;
                     case FOUR:
                         mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                        mStoryImage.setImageResource(R.drawable.rocket3);
                         mScene = Scene.THREE;
                         break;
                     case FIVE:
                         mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                        mStoryImage.setImageResource(R.drawable.rocket4);
                         mScene = Scene.FOUR;
                         break;
                 }
@@ -140,15 +159,27 @@ public class StartScreenActivity extends Activity {
 
             if (mScene == Scene.TWO && checkForDoorknob()) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                mStoryImage.setImageResource(R.drawable.rocket3);
                 mScene = Scene.THREE;
             }
 
             if (mScene == Scene.THREE && checkForRocketship()) {
+                mStoryImage.setImageResource(R.drawable.rocket31);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                mStoryImage.setImageResource(R.drawable.rocket4);
                 mScene = Scene.FOUR;
             }
 
-//            IF CIRCLE { }
+            if (checkingCircleProgress()) {
+                mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
+                mStoryImage.setImageResource(R.drawable.endscreen1);
+                mScene = Scene.FIVE;
+            }
         }
 
         private boolean checkForDoorknob() {
@@ -182,9 +213,83 @@ public class StartScreenActivity extends Activity {
             return false;
         }
 
+        private boolean checkingCircleProgress() {
+            if (circleStage == 0) {
+                if (mPitch > mLastCirclePitch) {
+                    circleDataCount += 1;
+                } else {
+                    if (circleDataCount < 90) {
+                        circleErrorCount += 1;
+                    } else {
+                        circleStage = 1;
+                        circleErrorCount = 0;
+                    }
+                }
+                if (circleDataCount % 5 == 0) {
+                    mLastCirclePitch = mPitch;
+                }
+                if (circleErrorCount > 30) {
+                    circleDataCount = 0;
+                    circleErrorCount = 0;
+                }
+                if (mYaw < maxYaw) {
+                    maxYaw = mYaw;
+                }
+            }
+
+            if (circleStage == 1) {
+                if (mPitch < mLastCirclePitch) {
+                    circleDataCount -= 1;
+                } else {
+                    circleErrorCount += 1;
+                }
+                if (circleDataCount % 5 == 0) {
+                    mLastCirclePitch = mPitch;
+                }
+                if (circleDataCount < 20 && -0.25 < (mCircleStartPitch - mPitch))
+                {
+                    if (checkIfCirclish()) {
+                        return true;
+                    }
+                }
+                if (circleErrorCount > 50) {
+                    circleDataCount = 0;
+                    circleStage = 0;
+                    circleErrorCount = 0;
+                }
+                if (mYaw > minYaw) {
+                    minYaw = mYaw;
+                }
+            }
+            return false;
+        }
+
+        private boolean checkIfCirclish() {
+            double leftDiff = circleStartYaw - minYaw;
+            double rightDiff = maxYaw - circleStartYaw;
+            boolean areSidesEqual = -0.5 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.5;
+            boolean isNotAVerticalOval = rightDiff < -0.35;
+            return areSidesEqual && isNotAVerticalOval;
+        }
+
+        public void startCircle() {
+            circleStage = 0;
+            mLastCirclePitch = mPitch;
+            mCircleStartPitch = mPitch;
+            circleStartYaw = mYaw;
+            maxYaw = mYaw;
+            minYaw = mYaw;
+
+            circleDataCount = 0;
+            circleErrorCount = 0;
+        }
+
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-
+            if (vector3.x() < 0.2 && vector3.y() < 0.7) {
+                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+                startCircle();
+            }
         }
 
         @Override

@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
                 if (mPitch > mLastCirclePitch) {
                     circleDataCount += 1;
                 } else {
-                    if (circleDataCount < 90) {
+                    if (circleDataCount < 100) {
                         circleErrorCount += 1;
                     } else {
                         circleStage = 1;
@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
                 if (circleDataCount % 5 == 0) {
                     mLastCirclePitch = mPitch;
                 }
-                if (circleErrorCount > 30) {
+                if (circleErrorCount > 40) {
                     circleDataCount = 0;
                     circleErrorCount = 0;
                 }
@@ -197,8 +197,8 @@ public class MainActivity extends Activity {
         private boolean checkIfCirclish() {
             double leftDiff = circleStartYaw - minYaw;
             double rightDiff = maxYaw - circleStartYaw;
-            boolean areSidesEqual = -0.5 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.5;
-            boolean isNotAVerticalOval = rightDiff < -0.35;
+            boolean areSidesEqual = -0.7 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.7;
+            boolean isNotAVerticalOval = rightDiff < -0.3;
 //            Toast.makeText(getApplicationContext(), "rightDiff " + rightDiff + " leftDiff " + leftDiff + "areSidesEqual " + areSidesEqual + "isNotAVerticalOval " + isNotAVerticalOval, Toast.LENGTH_LONG).show();
             TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
             circleTextView.setText("RightDiff " + rightDiff + " LeftDiff" + leftDiff);
@@ -238,7 +238,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-             if (vector3.x() < 0.2 && vector3.y() < 0.7) {
+             if (vector3.x() < -0.1 && vector3.y() < -0.1) {
                 TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
                 startCircle();
              }
