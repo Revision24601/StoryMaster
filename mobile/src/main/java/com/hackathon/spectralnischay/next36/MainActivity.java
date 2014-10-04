@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
@@ -33,13 +34,13 @@ public class MainActivity extends Activity {
             return;
         }
 
-
+        hub.pairWithAdjacentMyo();
         hub.addListener(mListener);
 
 
-        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getApplicationContext().startActivity(intent);
+//        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        getApplicationContext().startActivity(intent);
     }
 
 
@@ -62,7 +63,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private DeviceListener mListener = new DeviceListener() {
+    private DeviceListener mListener = new AbstractDeviceListener() {
         @Override
         public void onPair(Myo myo, long l) {
             Toast.makeText(getApplicationContext(), "paired", Toast.LENGTH_LONG).show();
