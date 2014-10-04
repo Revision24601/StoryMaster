@@ -5,5 +5,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_start_screen">StartScreenActivity</string>
+    <string name="paired">Paired</string>
+    <string name="notpaired">Not Paired</string>
+    <string name="pose">Waiting for pose</string>
+    <string name="waitingForArm">Waiting for arm</string>
 
 </resources>
