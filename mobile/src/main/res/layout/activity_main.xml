@@ -51,6 +51,13 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"/>
 
+    <TextView
+        android:text="@string/doorknob_old_x"
+        android:id="@+id/doorknob_old_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

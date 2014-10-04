@@ -11,5 +11,6 @@
     <string name="waitingForArm">Waiting for arm</string>
     <string name="orientation">orientation</string>
     <string name="waitingRocket">Waiting for Rocket</string>
+    <string name="doorknob_old_x">Waiting for Doorknob</string>
 
 </resources>
