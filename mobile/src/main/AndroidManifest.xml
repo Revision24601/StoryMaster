@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hackathon.spectralnischay.next36" >
-
-
     // Required for communicating with the Myo device
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
     // Required for sending usage data to Thalmic Labs
     <uses-permission android:name="android.permission.INTERNET" />
-
     // Required for saving Myo settings and other data
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -30,7 +26,11 @@
         </activity>
         <activity
             android:name=".StartScreenActivity"
-            android:label="@string/title_activity_start_screen" >
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".ArmUpActivity"
+            android:label="@string/title_activity_arm_up" >
         </activity>
     </application>
 

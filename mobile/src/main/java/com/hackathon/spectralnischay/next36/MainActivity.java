@@ -22,6 +22,7 @@ import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
 
+
     private double mOldX;
     private double mY;
     private double mW;
@@ -45,6 +46,11 @@ public class MainActivity extends Activity {
 
         hub.pairWithAdjacentMyo();
         hub.addListener(mListener);
+
+
+//        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        getApplicationContext().startActivity(intent);
     }
 
 
@@ -75,8 +81,9 @@ public class MainActivity extends Activity {
     private DeviceListener mListener = new AbstractDeviceListener() {
         @Override
         public void onPair(Myo myo, long l) {
-            TextView pairedTextView = (TextView)findViewById(R.id.pairedTextView);
-            pairedTextView.setText("Paired, MAC" + myo.getMacAddress());
+            Toast.makeText(getApplicationContext(), "paired", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "MAC" + myo.getMacAddress(), Toast.LENGTH_LONG).show();
+
         }
 
         @Override
@@ -86,30 +93,25 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDisconnect(Myo myo, long l) {
-            Toast.makeText(getApplicationContext(), "disconnected", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onArmRecognized(Myo myo, long l, Arm arm, XDirection xDirection) {
-            TextView armTextView = (TextView)findViewById(R.id.armTextView);
-            armTextView.setText("Arm recognized");
-
         }
 
         @Override
         public void onArmLost(Myo myo, long l) {
-            TextView armTextView = (TextView)findViewById(R.id.armTextView);
-            armTextView.setText("Arm Lost");
         }
 
         @Override
         public void onPose(Myo myo, long l, Pose pose) {
-            TextView poseTextView = (TextView)findViewById(R.id.poseTextView);
-            poseTextView.setText("Pose:" + pose);
+            Toast.makeText(getApplicationContext(), "Pose: " + pose, Toast.LENGTH_SHORT).show();
+
         }
 
         @Override
         public void onOrientationData(Myo myo, long l, Quaternion quaternion) {
+
             mOldX = quaternion.x();
             mY = quaternion.y();
             mW = quaternion.w();
@@ -153,16 +155,14 @@ public class MainActivity extends Activity {
         }
 
 
+
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-//            Toast.makeText(getApplicationContext(), "Vector3_accel_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long l, Vector3 vector3) {
-//            Toast.makeText(getApplicationContext(), "Vector3_gyro_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
-
 
         @Override
         public void onRssi(Myo myo, long l, int i) {
