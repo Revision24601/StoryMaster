@@ -22,7 +22,7 @@ import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
-    private double mX;
+    private double mOldX;
     private double mY;
     private double mW;
     private double mZ;
@@ -53,6 +53,11 @@ public class MainActivity extends Activity {
 
         hub.pairWithAdjacentMyo();
         hub.addListener(mListener);
+
+
+//        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        getApplicationContext().startActivity(intent);
     }
 
 
@@ -118,7 +123,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onOrientationData(Myo myo, long l, Quaternion quaternion) {
-            mX = quaternion.x();
+            mOldX = quaternion.x();
             mY = quaternion.y();
             mW = quaternion.w();
             mZ = quaternion.z();
@@ -126,6 +131,7 @@ public class MainActivity extends Activity {
             mRoll = Quaternion.roll(quaternion);
             mYaw = Quaternion.yaw(quaternion);
 
+            checkForDoorknob();
             checkForRocketship();
             checkingCircleProgress();
         }
@@ -181,7 +187,7 @@ public class MainActivity extends Activity {
             double zAvg = 0.75;
 
             double range = 0.1;
-            boolean xCondition = (xAvg - range) < mX && mX < (xAvg + range);
+            boolean xCondition = (xAvg - range) < mOldX && mOldX < (xAvg + range);
             boolean yCondition = (yAvg - range) < mY && mY < (xAvg + range);
             boolean wCondition = (wAvg - range) < mW && mW < (xAvg + range);
             boolean zCondition = (zAvg - range) < mZ && mZ < (xAvg + range);
@@ -192,17 +198,23 @@ public class MainActivity extends Activity {
             }
         }
 
+        private void checkForDoorknob() {
+            if (mOldX > 0.5 ) {
+                if (mRoll > 1 ) {
+                    Log.d("Nischay", "" + mOldX);
+                    TextView doorknobOldX = (TextView) findViewById(R.id.doorknob_old_x);
+                    doorknobOldX.setText("Doorknob");
+                }
+            }
+        }
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-//            Toast.makeText(getApplicationContext(), "Vector3_accel_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long l, Vector3 vector3) {
-//            Toast.makeText(getApplicationContext(), "Vector3_gyro_x= " + vector3.x(), Toast.LENGTH_SHORT).show();
         }
-
 
         @Override
         public void onRssi(Myo myo, long l, int i) {
@@ -212,11 +224,14 @@ public class MainActivity extends Activity {
     public void logOrientationData(View view) {
         TextView orientationTextView = (TextView)findViewById(R.id.orientationTextView);
         TextView pitchTextView = (TextView)findViewById(R.id.pitchRollYawTextView);
-        orientationTextView.setText("Orientation:" + " x" + mX +  " y" +  mY + " w" + mW + " z" + mZ );
+        orientationTextView.setText("Orientation:" + " x" + mOldX +  " y" +  mY + " w" + mW + " z" + mZ );
         pitchTextView.setText("Pitch: " + mPitch + " Roll: " + mRoll + " Yaw:" + mYaw );
 
         TextView rocketTextView = (TextView) findViewById(R.id.rocketTextView);
         rocketTextView.setText("waiting for rocket");
+
+        TextView doorknobOldX = (TextView) findViewById(R.id.doorknob_old_x);
+        doorknobOldX.setText("waiting for doorknob");
 
     }
 
