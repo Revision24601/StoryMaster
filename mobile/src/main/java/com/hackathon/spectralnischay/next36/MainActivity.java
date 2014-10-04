@@ -154,8 +154,6 @@ public class MainActivity extends Activity {
             }
         }
 
-
-
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
         }

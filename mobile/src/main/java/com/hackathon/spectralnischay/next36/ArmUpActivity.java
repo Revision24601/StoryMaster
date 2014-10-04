@@ -5,6 +5,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.thalmic.myo.Arm;
+import com.thalmic.myo.DeviceListener;
+import com.thalmic.myo.Myo;
+import com.thalmic.myo.Pose;
+import com.thalmic.myo.Quaternion;
+import com.thalmic.myo.Vector3;
+import com.thalmic.myo.XDirection;
+
 
 public class ArmUpActivity extends Activity {
 
@@ -33,4 +41,5 @@ public class ArmUpActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
