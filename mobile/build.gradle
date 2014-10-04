@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.hackathon.spectralnischay.next36"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
@@ -20,7 +20,16 @@ android {
 }
 
 dependencies {
+
+    repositories {
+        maven {
+            url '/Users/sina/Next36/myo-android-sdk-0.6.0/myorepository'
+        }
+    }
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
     compile 'com.google.android.gms:play-services-wearable:+'
+    compile('com.thalmic:myosdk:0.6.+@aar')
 }
+
