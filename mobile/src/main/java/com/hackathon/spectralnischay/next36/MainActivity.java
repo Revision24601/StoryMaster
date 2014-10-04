@@ -133,7 +133,7 @@ public class MainActivity extends Activity {
             boolean zCondition = (zAvg - range) < mZ && mZ < (xAvg + range);
 
             Log.d("ADAM", xCondition + " " + yCondition + " " + zCondition + " " + wCondition);
-            if (xCondition && yCondition && zCondition) {
+            if (mPitch < -1) {
                 TextView rocketTextView = (TextView) findViewById(R.id.rocketTextView);
                 rocketTextView.setText("HIT ROCKET!!!!");
             }
@@ -161,6 +161,9 @@ public class MainActivity extends Activity {
         TextView pitchTextView = (TextView)findViewById(R.id.pitchRollYawTextView);
         orientationTextView.setText("Orientation:" + " x" + mX +  " y" +  mY + " w" + mW + " z" + mZ );
         pitchTextView.setText("Pitch: " + mPitch + " Roll: " + mRoll + " Yaw:" + mYaw );
+
+        TextView rocketTextView = (TextView) findViewById(R.id.rocketTextView);
+        rocketTextView.setText("waiting for rocket");
 
     }
 }
