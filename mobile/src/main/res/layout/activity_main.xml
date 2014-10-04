@@ -1,6 +1,7 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <Button
         android:layout_width="wrap_content"
@@ -8,8 +9,53 @@
         android:text="Go to Frontend"
         android:onClick="goToStartScreen"/>
     <TextView
-        android:text="@string/hello_world"
+        android:text="@string/notpaired"
+        android:id="@+id/pairedTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="30dp"/>
 
-</RelativeLayout>
+    <TextView
+        android:text="@string/waitingForArm"
+        android:id="@+id/armTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/pose"
+        android:id="@+id/poseTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/orientation"
+        android:id="@+id/orientationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/orientation"
+        android:id="@+id/pitchRollYawTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/waitingRocket"
+        android:id="@+id/rocketTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log OrientationData"
+        android:onClick="logOrientationData"/>
+
+
+</LinearLayout>

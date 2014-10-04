@@ -7,5 +7,11 @@
     <string name="title_activity_start_screen">StartScreenActivity</string>
     <string name="start_screen">Get Started!</string>
     <string name="title_activity_arm_up">ArmUpActivity</string>
+    <string name="paired">Paired</string>
+    <string name="notpaired">Not Paired</string>
+    <string name="pose">Waiting for pose</string>
+    <string name="waitingForArm">Waiting for arm</string>
+    <string name="orientation">orientation</string>
+    <string name="waitingRocket">Waiting for Rocket</string>
 
 </resources>
