@@ -21,6 +21,14 @@ import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
+    private double mX;
+    private double mY;
+    private double mW;
+    private double mZ;
+    private double mPitch;
+    private double mYaw;
+    private double mRoll;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +109,34 @@ public class MainActivity extends Activity {
 
         @Override
         public void onOrientationData(Myo myo, long l, Quaternion quaternion) {
+            mX = quaternion.x();
+            mY = quaternion.y();
+            mW = quaternion.w();
+            mZ = quaternion.z();
+            mPitch = Quaternion.pitch(quaternion);
+            mRoll = Quaternion.roll(quaternion);
+            mYaw = Quaternion.yaw(quaternion);
+
+            checkForRocketship();
+        }
+
+        private void checkForRocketship() {
+            double xAvg = 0.5;
+            double yAvg = 0.3;
+            double wAvg = -0.2;
+            double zAvg = 0.75;
+
+            double range = 0.1;
+            boolean xCondition = (xAvg - range) < mX && mX < (xAvg + range);
+            boolean yCondition = (yAvg - range) < mY && mY < (xAvg + range);
+            boolean wCondition = (wAvg - range) < mW && mW < (xAvg + range);
+            boolean zCondition = (zAvg - range) < mZ && mZ < (xAvg + range);
+
+            Log.d("ADAM", xCondition + " " + yCondition + " " + zCondition + " " + wCondition);
+            if (xCondition && yCondition && zCondition) {
+                TextView rocketTextView = (TextView) findViewById(R.id.rocketTextView);
+                rocketTextView.setText("HIT ROCKET!!!!");
+            }
         }
 
         @Override
@@ -116,4 +152,11 @@ public class MainActivity extends Activity {
         }
     };
 
+    public void logOrientationData(View view) {
+        TextView orientationTextView = (TextView)findViewById(R.id.orientationTextView);
+        TextView pitchTextView = (TextView)findViewById(R.id.pitchRollYawTextView);
+        orientationTextView.setText("Orientation:" + " x" + mX +  " y" +  mY + " w" + mW + " z" + mZ );
+        pitchTextView.setText("Pitch: " + mPitch + " Roll: " + mRoll + " Yaw:" + mYaw );
+
+    }
 }

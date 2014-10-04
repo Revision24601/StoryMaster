@@ -30,5 +30,32 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"/>
 
+    <TextView
+        android:text="@string/orientation"
+        android:id="@+id/orientationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/orientation"
+        android:id="@+id/pitchRollYawTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/waitingRocket"
+        android:id="@+id/rocketTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log OrientationData"
+        android:onClick="logOrientationData"/>
+
 
 </LinearLayout>

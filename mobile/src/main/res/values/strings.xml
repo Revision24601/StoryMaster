@@ -9,5 +9,7 @@
     <string name="notpaired">Not Paired</string>
     <string name="pose">Waiting for pose</string>
     <string name="waitingForArm">Waiting for arm</string>
+    <string name="orientation">orientation</string>
+    <string name="waitingRocket">Waiting for Rocket</string>
 
 </resources>
