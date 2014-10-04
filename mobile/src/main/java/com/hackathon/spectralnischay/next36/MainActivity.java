@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.lang.Math;
 
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
@@ -21,8 +22,6 @@ import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
-
-
     private double mOldX;
     private double mY;
     private double mW;
@@ -30,7 +29,15 @@ public class MainActivity extends Activity {
     private double mPitch;
     private double mYaw;
     private double mRoll;
+    private double mInitialPitch;
+    private double mInitialYaw;
+    private double mInitialRoll;
 
+    private int circleStage = 0;
+    private int circleDataCount = 0;
+    private double mLastCirclePitch = 0;
+    private double circleErrorCount = 0;
+    private double mCircleStartPitch = mPitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +88,8 @@ public class MainActivity extends Activity {
     private DeviceListener mListener = new AbstractDeviceListener() {
         @Override
         public void onPair(Myo myo, long l) {
-            Toast.makeText(getApplicationContext(), "paired", Toast.LENGTH_LONG).show();
-            Toast.makeText(getApplicationContext(), "MAC" + myo.getMacAddress(), Toast.LENGTH_LONG).show();
-
+            TextView pairedTextView = (TextView)findViewById(R.id.pairedTextView);
+            pairedTextView.setText("Paired, MAC" + myo.getMacAddress());
         }
 
         @Override
@@ -93,25 +99,30 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDisconnect(Myo myo, long l) {
+            Toast.makeText(getApplicationContext(), "disconnected", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onArmRecognized(Myo myo, long l, Arm arm, XDirection xDirection) {
+            TextView armTextView = (TextView)findViewById(R.id.armTextView);
+            armTextView.setText("Arm recognized");
+
         }
 
         @Override
         public void onArmLost(Myo myo, long l) {
+            TextView armTextView = (TextView)findViewById(R.id.armTextView);
+            armTextView.setText("Arm Lost");
         }
 
         @Override
         public void onPose(Myo myo, long l, Pose pose) {
-            Toast.makeText(getApplicationContext(), "Pose: " + pose, Toast.LENGTH_SHORT).show();
-
+            TextView poseTextView = (TextView)findViewById(R.id.poseTextView);
+            poseTextView.setText("Pose:" + pose);
         }
 
         @Override
         public void onOrientationData(Myo myo, long l, Quaternion quaternion) {
-
             mOldX = quaternion.x();
             mY = quaternion.y();
             mW = quaternion.w();
@@ -120,9 +131,53 @@ public class MainActivity extends Activity {
             mRoll = Quaternion.roll(quaternion);
             mYaw = Quaternion.yaw(quaternion);
 
-
             checkForDoorknob();
             checkForRocketship();
+            checkingCircleProgress();
+        }
+
+        private void checkingCircleProgress() {
+            if (circleStage == 0) {
+                if (mPitch > mLastCirclePitch) {
+                    circleDataCount += 1;
+                } else {
+                    circleErrorCount += 1;
+                }
+                if (circleDataCount % 5 == 0) {
+                    mLastCirclePitch = mPitch;
+                }
+                if (circleDataCount > 150) {
+                    circleStage = 1;
+                    circleErrorCount = 0;
+                }
+                if (circleErrorCount > 50) {
+                    circleDataCount = 0;
+                    circleErrorCount = 0;
+                }
+            }
+
+            if (circleStage == 1) {
+                if (mPitch < mLastCirclePitch) {
+                    circleDataCount -= 1;
+                } else {
+                    circleErrorCount += 1;
+                }
+                if (circleDataCount % 5 == 0) {
+                    mLastCirclePitch = mPitch;
+                }
+                if (circleDataCount < 50 && (-0.1 < mCircleStartPitch - mPitch))
+                {
+                    TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+                    circleTextView.setText("HIT CIRCLE!!!!");
+                }
+                if (circleErrorCount > 50) {
+                    circleDataCount = 0;
+                    circleStage = 0;
+                    circleErrorCount = 0;
+                }
+            }
+            TextView circleInfo = (TextView)findViewById(R.id.circleInfo);
+            circleInfo.setText("Stage = " + circleStage + " circleDataCount" + circleDataCount + " circleErrorCount" + circleErrorCount);
         }
 
         private void checkForRocketship() {
@@ -137,7 +192,6 @@ public class MainActivity extends Activity {
             boolean wCondition = (wAvg - range) < mW && mW < (xAvg + range);
             boolean zCondition = (zAvg - range) < mZ && mZ < (xAvg + range);
 
-            Log.d("ADAM", xCondition + " " + yCondition + " " + zCondition + " " + wCondition);
             if (mPitch < -1) {
                 TextView rocketTextView = (TextView) findViewById(R.id.rocketTextView);
                 rocketTextView.setText("HIT ROCKET!!!!");
@@ -179,5 +233,21 @@ public class MainActivity extends Activity {
         TextView doorknobOldX = (TextView) findViewById(R.id.doorknob_old_x);
         doorknobOldX.setText("waiting for doorknob");
 
+    }
+
+    public void initializePositions(View view) {
+        mInitialRoll = mRoll;
+        mInitialPitch = mPitch;
+        mInitialYaw = mYaw;
+        startCircle();
+    }
+
+    public void startCircle() {
+        mLastCirclePitch = mPitch;
+        mCircleStartPitch = mPitch;
+        TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+        circleTextView.setText("Waiting for circle");
+        circleDataCount = 0;
+        circleErrorCount = 0;
     }
 }

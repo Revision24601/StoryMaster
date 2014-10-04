@@ -58,11 +58,31 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"/>
 
+    <TextView
+        android:text="@string/waitingForCircle"
+        android:id="@+id/circleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:text="@string/circleInfo"
+        android:id="@+id/circleInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Log OrientationData"
+    android:onClick="logOrientationData"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log OrientationData"
-        android:onClick="logOrientationData"/>
+        android:text="Initialize Positions"
+        android:onClick="initializePositions"/>
 
 
 </LinearLayout>
