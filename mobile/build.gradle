@@ -23,7 +23,7 @@ dependencies {
 
     repositories {
         maven {
-            url '/Users/sina/Next36/myo-android-sdk-0.6.0/myorepository'
+            url '../myo-android-sdk-0.6.0/myorepository'
         }
     }
 

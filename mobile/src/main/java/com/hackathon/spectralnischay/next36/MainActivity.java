@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thalmic.myo.AbstractDeviceListener;
@@ -17,8 +19,6 @@ import com.thalmic.myo.Pose;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
-import com.thalmic.myo.scanner.ScanActivity;
-
 
 public class MainActivity extends Activity {
 
@@ -36,11 +36,6 @@ public class MainActivity extends Activity {
 
         hub.pairWithAdjacentMyo();
         hub.addListener(mListener);
-
-
-//        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        getApplicationContext().startActivity(intent);
     }
 
 
@@ -63,12 +58,16 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private DeviceListener mListener = new DeviceListener() {
+    public void goToStartScreen(View view) {
+        Intent intent = new Intent(this, StartScreenActivity.class);
+        startActivity(intent);
+    }
+
+    private DeviceListener mListener = new AbstractDeviceListener() {
         @Override
         public void onPair(Myo myo, long l) {
-            Toast.makeText(getApplicationContext(), "paired", Toast.LENGTH_LONG).show();
-            Toast.makeText(getApplicationContext(), "MAC" + myo.getMacAddress(), Toast.LENGTH_LONG).show();
-
+            TextView pairedTextView = (TextView)findViewById(R.id.pairedTextView);
+            pairedTextView.setText("Paired, MAC" + myo.getMacAddress());
         }
 
         @Override
@@ -78,20 +77,26 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDisconnect(Myo myo, long l) {
+            Toast.makeText(getApplicationContext(), "disconnected", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onArmRecognized(Myo myo, long l, Arm arm, XDirection xDirection) {
+            TextView armTextView = (TextView)findViewById(R.id.armTextView);
+            armTextView.setText("Arm recognized");
+
         }
 
         @Override
         public void onArmLost(Myo myo, long l) {
+            TextView armTextView = (TextView)findViewById(R.id.armTextView);
+            armTextView.setText("Arm Lost");
         }
 
         @Override
         public void onPose(Myo myo, long l, Pose pose) {
-            Toast.makeText(getApplicationContext(), "Pose: " + pose, Toast.LENGTH_SHORT).show();
-
+            TextView poseTextView = (TextView)findViewById(R.id.poseTextView);
+            poseTextView.setText("Pose:" + pose);
         }
 
         @Override
