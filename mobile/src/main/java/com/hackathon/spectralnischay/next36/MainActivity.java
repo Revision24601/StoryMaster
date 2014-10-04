@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
             TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
             circleTextView.setText("RightDiff " + rightDiff + " LeftDiff" + leftDiff);
 
-            return areSidesEqual && isNotAVerticalOval;
+            return isNotAVerticalOval;
         }
 
         private void checkForRocketship() {
@@ -238,10 +238,10 @@ public class MainActivity extends Activity {
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-             if (vector3.x() < -0.1 && vector3.y() < -0.1) {
-                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
-                startCircle();
-             }
+//             if (vector3.x() < -0.1 && vector3.y() < -0.1) {
+//                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+//                startCircle();
+//             }
         }
 
         @Override

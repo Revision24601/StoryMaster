@@ -2,6 +2,7 @@ package com.hackathon.spectralnischay.next36;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +19,9 @@ import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class StartScreenActivity extends Activity {
 
@@ -28,6 +32,7 @@ public class StartScreenActivity extends Activity {
     private double mPitch;
     private double mYaw;
     private double mRoll;
+    private boolean taskScheduled = false;
 
     private int circleStage = 0;
     private int circleDataCount = 0;
@@ -40,7 +45,7 @@ public class StartScreenActivity extends Activity {
 
     public enum Scene {
         ONE, TWO, THREE, FOUR,
-        FIVE
+        THREEPAUSE, FIVE
     }
 
     Scene mScene = Scene.ONE;
@@ -120,30 +125,30 @@ public class StartScreenActivity extends Activity {
                 mStoryImage.setImageResource(R.drawable.rocket2);
                 mScene = Scene.TWO;
             }
-            else if (pose == Pose.WAVE_OUT) {
-                switch (mScene) {
-                    case TWO:
-                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__thalmic_blue));
-                        mStoryImage.setImageResource(R.drawable.rocket1);
-                        mScene = Scene.ONE;
-                        break;
-                    case THREE:
-                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
-                        mStoryImage.setImageResource(R.drawable.rocket2);
-                        mScene = Scene.TWO;
-                        break;
-                    case FOUR:
-                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                        mStoryImage.setImageResource(R.drawable.rocket3);
-                        mScene = Scene.THREE;
-                        break;
-                    case FIVE:
-                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-                        mStoryImage.setImageResource(R.drawable.rocket4);
-                        mScene = Scene.FOUR;
-                        break;
-                }
-            }
+//            else if (pose == Pose.WAVE_OUT) {
+//                switch (mScene) {
+//                    case TWO:
+//                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__thalmic_blue));
+//                        mStoryImage.setImageResource(R.drawable.rocket1);
+//                        mScene = Scene.ONE;
+//                        break;
+//                    case THREE:
+//                        mStartScreenView.setBackgroundColor(getResources().getColor(R.color.myosdk__button_red));
+//                        mStoryImage.setImageResource(R.drawable.rocket2);
+//                        mScene = Scene.TWO;
+//                        break;
+//                    case FOUR:
+//                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+//                        mStoryImage.setImageResource(R.drawable.rocket3);
+//                        mScene = Scene.THREE;
+//                        break;
+//                    case FIVE:
+//                        mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+//                        mStoryImage.setImageResource(R.drawable.rocket4);
+//                        mScene = Scene.FOUR;
+//                        break;
+//                }
+//            }
         }
 
         @Override
@@ -165,22 +170,31 @@ public class StartScreenActivity extends Activity {
 
             if (mScene == Scene.THREE && checkForRocketship()) {
                 mStoryImage.setImageResource(R.drawable.rocket31);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-                mStoryImage.setImageResource(R.drawable.rocket4);
-                mScene = Scene.FOUR;
+                mScene = Scene.THREEPAUSE;
             }
 
+            if (mScene == Scene.THREEPAUSE && !taskScheduled) {
+                taskScheduled = true;
+                Handler handler = new Handler();
+                handler.postDelayed(runnable, 2000);
+            }
             if (checkingCircleProgress()) {
                 mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
                 mStoryImage.setImageResource(R.drawable.endscreen1);
                 mScene = Scene.FIVE;
+                Log.d("ADAM", "THIS WORKED");
             }
         }
+
+        private Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                startCircle();
+                mStartScreenView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                mStoryImage.setImageResource(R.drawable.rocket4);
+                mScene = Scene.FOUR;
+            }
+        };
 
         private boolean checkForDoorknob() {
             if (mRoll > 1 ) {
@@ -206,7 +220,6 @@ public class StartScreenActivity extends Activity {
             boolean wCondition = (wAvg - range) < mW && mW < (xAvg + range);
             boolean zCondition = (zAvg - range) < mZ && mZ < (xAvg + range);
 
-            Log.d("ADAM", xCondition + " " + yCondition + " " + zCondition + " " + wCondition);
             if (mPitch < -1) {
                 return true;
             }
@@ -214,6 +227,7 @@ public class StartScreenActivity extends Activity {
         }
 
         private boolean checkingCircleProgress() {
+            Log.d("ADAM", circleDataCount + " " + circleStage);
             if (circleStage == 0) {
                 if (mPitch > mLastCirclePitch) {
                     circleDataCount += 1;
@@ -238,6 +252,8 @@ public class StartScreenActivity extends Activity {
             }
 
             if (circleStage == 1) {
+                //Log.d("ADAM", "stage is 1");
+
                 if (mPitch < mLastCirclePitch) {
                     circleDataCount -= 1;
                 } else {
@@ -246,7 +262,7 @@ public class StartScreenActivity extends Activity {
                 if (circleDataCount % 5 == 0) {
                     mLastCirclePitch = mPitch;
                 }
-                if (circleDataCount < 20 && -0.25 < (mCircleStartPitch - mPitch))
+                if (circleDataCount < 30 && -0.25 < (mCircleStartPitch - mPitch))
                 {
                     if (checkIfCirclish()) {
                         return true;
@@ -267,9 +283,9 @@ public class StartScreenActivity extends Activity {
         private boolean checkIfCirclish() {
             double leftDiff = circleStartYaw - minYaw;
             double rightDiff = maxYaw - circleStartYaw;
-            boolean areSidesEqual = -0.5 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.5;
-            boolean isNotAVerticalOval = rightDiff < -0.35;
-            return areSidesEqual && isNotAVerticalOval;
+//            boolean areSidesEqual = -0.5 < (rightDiff - leftDiff) && (rightDiff - leftDiff) < 0.5;
+            boolean isNotAVerticalOval = rightDiff < -0.1;
+            return isNotAVerticalOval;
         }
 
         public void startCircle() {
@@ -279,6 +295,7 @@ public class StartScreenActivity extends Activity {
             circleStartYaw = mYaw;
             maxYaw = mYaw;
             minYaw = mYaw;
+            Log.d("ADAM", "start circle");
 
             circleDataCount = 0;
             circleErrorCount = 0;
@@ -286,10 +303,10 @@ public class StartScreenActivity extends Activity {
 
         @Override
         public void onAccelerometerData(Myo myo, long l, Vector3 vector3) {
-            if (vector3.x() < 0.2 && vector3.y() < 0.7) {
-                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
-                startCircle();
-            }
+//            if (vector3.x() < -0.1 && vector3.y() < -0.1) {
+//                TextView circleTextView = (TextView) findViewById(R.id.circleTextView);
+//                startCircle();
+//            }
         }
 
         @Override
