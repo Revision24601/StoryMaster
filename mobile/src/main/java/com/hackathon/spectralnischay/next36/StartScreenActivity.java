@@ -227,7 +227,7 @@ public class StartScreenActivity extends Activity {
         }
 
         private boolean checkingCircleProgress() {
-            Log.d("ADAM", circleDataCount + " " + circleStage);
+            //Log.d("ADAM", circleDataCount + " " + circleStage);
             if (circleStage == 0) {
                 if (mPitch > mLastCirclePitch) {
                     circleDataCount += 1;
@@ -262,7 +262,7 @@ public class StartScreenActivity extends Activity {
                 if (circleDataCount % 5 == 0) {
                     mLastCirclePitch = mPitch;
                 }
-                if (circleDataCount < 30 && -0.25 < (mCircleStartPitch - mPitch))
+                if (circleDataCount < 40 && -0.25 < (mCircleStartPitch - mPitch))
                 {
                     if (checkIfCirclish()) {
                         return true;
